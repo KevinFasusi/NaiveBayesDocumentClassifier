@@ -31,10 +31,10 @@ We are all brothers and sisters in code :sunglasses: .
 	3. Ensemble
 3. Project Walk Through
 	1. Project Setup
-		1.1. Selecting drive for project folder structure
-		1.2. Setting folder path and folder alias
-		1.3. Adding preclassified documents (Training Set)
-		1.4. Adding validation documents (Test Set)
+		1. Selecting drive for project folder structure
+		2. Setting folder path and folder alias
+		3. Adding preclassified documents (Training Set)
+		4. Adding validation documents (Test Set)
 	2. Train Model
 3. Model Accuracy
 4. Navigating UI and Settings
