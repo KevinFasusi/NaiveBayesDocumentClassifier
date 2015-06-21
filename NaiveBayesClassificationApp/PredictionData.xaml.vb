@@ -1,0 +1,3 @@
+﻿Class PredictionData
+
+End Class

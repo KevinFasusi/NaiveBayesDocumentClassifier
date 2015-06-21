@@ -1,0 +1,74 @@
+﻿<Page x:Class="SetupProject"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      mc:Ignorable="d" 
+      d:DesignHeight="800" d:DesignWidth="800"
+      Title="SetupProject">
+
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                <GradientStop Color="Black" Offset="0"/>
+                <GradientStop Color="White" Offset="0.169"/>
+                <GradientStop Color="Gainsboro" Offset="0.096"/>
+                <GradientStop Color="#FF575656" Offset="0.02"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid Grid.Column="1" Grid.Row="1">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Grid.Row="0">
+                    <Label Name="lblMessage"></Label>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Width="280" Margin="3,20,3,3" Name="stkplSetup">
+                    <Label Grid.Row="0" Margin="4,4,4,4" HorizontalAlignment="Left" Content="Drive:"/>
+                    <WrapPanel>
+                        <ListBox  Grid.Row="0" x:Name="lstDrives" Width="150" Height="30"/>
+                    </WrapPanel>
+                    <Label Margin="4,4,4,4" HorizontalAlignment="Left" Content="First Folder:"/>
+                    <WrapPanel>
+                        <TextBox Name="txtFirstFolder" Width="150" Height="30"/>
+                    </WrapPanel>
+                    <Label Margin="4,4,4,4" HorizontalAlignment="Left" Content="First Folder Alias:"/>
+                    <WrapPanel>
+                        <TextBox Name="txtFirstFolderAlias" Width="150" Height="30"/>
+                    </WrapPanel>
+                    <Label Margin="4,4,4,4" HorizontalAlignment="Left" Content="Second Folder:"/>
+                    <WrapPanel>
+                        <TextBox Name="txtSecondFolder" Width="150" Height="30"/>
+                    </WrapPanel>
+                    <Label Margin="4,4,4,4" HorizontalAlignment="Left" Content="Second Folder Alias:"/>
+                    <WrapPanel>
+                        <TextBox Name="txtSecondFolderAlias" Width="150" Height="30"/>
+                    </WrapPanel>
+                </StackPanel>
+                <StackPanel Grid.Column="2" Margin="3,44,3,3" Name="stkplSetupButtons">
+                    <Button Name="btnCreateProject" Width="150" Margin="10,10,10,10">Create Project</Button>
+                    
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Grid>
+</Page>
