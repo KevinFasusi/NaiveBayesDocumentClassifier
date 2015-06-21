@@ -44,6 +44,6 @@ We are all brothers and sisters in code :sunglasses: .
 
 My contact details are below, if you wish to discuss anything, reach me at:
 
-* Twitter: http://www.twittwer.com/kevin_fasusi
+* Twitter: http://www.twitter.com/kevin_fasusi
 * Google+: http://google.com/+KevinFasusi
 
