@@ -8,6 +8,7 @@ Public Class ProjectConfig
         ' This call is required by the designer.
         InitializeComponent()
         Dim folderDetails As New SessionData
+  
 
         lblFolder1Path.Content = folderDetails.FolderPath1
         lblAlias1.Content = folderDetails.Folder1Alias
@@ -22,7 +23,11 @@ Public Class ProjectConfig
         lblClassificationModel.Content = classifier
 
         Dim mainSettingsPage As New MainSettings
+        mainSettingsPage.DataContext = Me
+
         frmSettings.NavigationService.Navigate(mainSettingsPage)
+
+
     End Sub
 
     Private Sub Button_Click(sender As Object, e As RoutedEventArgs)

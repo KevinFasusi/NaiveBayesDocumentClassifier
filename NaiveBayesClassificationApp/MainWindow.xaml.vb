@@ -313,4 +313,7 @@ Public Class MainWindow
         settingConfig.ShowDialog()
 
     End Sub
+
+    Private Sub button6_Click(sender As Object, e As RoutedEventArgs) Handles button6.Click
+    End Sub
 End Class

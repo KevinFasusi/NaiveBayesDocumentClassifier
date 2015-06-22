@@ -22,6 +22,9 @@ Class MainSettings
         Catch ex As Exception
             Dim logError As New ErrorLogger(ex.Message.ToString, ex.StackTrace.ToString, ErrorLogger.ErrorType.Warning)
         End Try
+
+
+
     End Sub
 
     Private Sub Button_Click(sender As Object, e As RoutedEventArgs)
@@ -47,6 +50,10 @@ Class MainSettings
 
         Dim sb As Storyboard = CType(Me.FindResource("ToasterPopup"), Storyboard)
         sb.Begin()
-
+        Dim setLbl As New ProjectConfig
+        setLbl.lblClassificationModel.Content = lblToaster.Text
+        Dim projectConfig As ProjectConfig = CType(Me.DataContext, NaiveBayesClassificationApp.ProjectConfig)
+        projectConfig.lblClassificationModel.Content = lblToaster.Text.Substring(0, lblToaster.Text.IndexOf(" "))
+    
     End Sub
 End Class
