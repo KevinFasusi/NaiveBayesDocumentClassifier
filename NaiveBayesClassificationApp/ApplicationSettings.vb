@@ -38,7 +38,7 @@ Public Class ApplicationSettings
 
             xmlIn.ReadStartElement("Application")
             ' xmlIn.ReadStartElement("Classification")
-            Classification = xmlIn.ReadElementString("Classification").ToString
+            _classification = xmlIn.ReadElementString("Classifier").ToString
             xmlIn.Close()
             writer.Close()
             xmlIn = Nothing
@@ -54,12 +54,18 @@ Public Class ApplicationSettings
         Dim settings As New XmlWriterSettings
         settings.Indent = True
         settings.IndentChars = ("  ")
-        Dim xmlOut As XmlWriter = XmlWriter.Create(_XPATH, settings)
+        Dim writer As New IO.StreamWriter(_XPATH, False)
+        Dim xmlOut As XmlWriter = XmlWriter.Create(writer, settings)
         xmlOut.WriteStartDocument()
         xmlOut.WriteStartElement("Application")
-        xmlOut.WriteAttributeString("Classifier", model.ToString)
+        xmlOut.WriteElementString("Classifier", model.ToString)
         xmlOut.WriteEndElement()
         xmlOut.Close()
+        writer.Close()
+
+        xmlOut = Nothing
+        writer = Nothing
+
         Return True
     End Function
 

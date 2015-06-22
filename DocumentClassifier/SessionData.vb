@@ -94,6 +94,7 @@ Public Class SessionData
         End Try
     End Sub
 
+
     Public Function WriteSessionData(sessionData As String, selection As SessionDataType) As Boolean
         Dim settings As New XmlWriterSettings
         settings.Indent = True
