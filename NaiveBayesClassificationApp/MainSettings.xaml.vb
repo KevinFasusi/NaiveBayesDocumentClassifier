@@ -1,4 +1,6 @@
-﻿Class MainSettings
+﻿Imports System.Windows.Media.Animation
+
+Class MainSettings
 
     Public Sub New()
 
@@ -28,10 +30,13 @@
         Try
             If rdoEnsemble.IsChecked = True Then
                 selectModel.WriteSessionData(ApplicationSettings.Classifier.Ensemble)
+                lblToaster.Text = "Ensemble mode set"
             ElseIf rdoBernoulli.IsChecked = True Then
                 selectModel.WriteSessionData(ApplicationSettings.Classifier.Bernoulli)
+                lblToaster.Text = "Bernoulli mode set"
             ElseIf rdoMultinominal.IsChecked = True Then
                 selectModel.WriteSessionData(ApplicationSettings.Classifier.Multinominal)
+                lblToaster.Text = "Multinominal mode set"
             Else
                 MessageBox.Show("Please select a classification model to proceed.")
             End If
@@ -39,6 +44,9 @@
             Dim logError As New ErrorLogger(ex.Message.ToString, ex.StackTrace.ToString, ErrorLogger.ErrorType.Warning)
             Exit Sub
         End Try
+
+        Dim sb As Storyboard = CType(Me.FindResource("ToasterPopup"), Storyboard)
+        sb.Begin()
 
     End Sub
 End Class

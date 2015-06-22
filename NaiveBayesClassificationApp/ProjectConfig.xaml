@@ -1,7 +1,7 @@
 ﻿<Window x:Class="ProjectConfig"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="Settings" Height="325" Width="525" ResizeMode="NoResize">
+    Title="Settings" Height="320" Width="557" ResizeMode="NoResize">
 
     <Window.Resources>
         <Style TargetType="Label">
