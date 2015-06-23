@@ -97,6 +97,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Activity.xaml.vb">
+      <DependentUpon>Activity.xaml</DependentUpon>
+    </Compile>
     <Compile Include="AliasSettings.xaml.vb">
       <DependentUpon>AliasSettings.xaml</DependentUpon>
     </Compile>
@@ -135,6 +138,10 @@
     <Compile Include="test.xaml.vb">
       <DependentUpon>test.xaml</DependentUpon>
     </Compile>
+    <Page Include="Activity.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="AliasSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

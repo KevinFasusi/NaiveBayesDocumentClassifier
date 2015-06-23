@@ -22,6 +22,9 @@ Class home
             'deserialise into this initialisation the saved state of the class for a project
             Dim xmlSerialiser As XmlSerializer = New XmlSerializer(GetType(List(Of LogActivity)))
 
+            Dim currentModel As New ApplicationSettings
+            lblCurrentModel.Content = "Classification Model: " & currentModel.Classification.ToString
+
 
             listActivity = CType(xmlSerialiser.Deserialize(tag), Global.System.Collections.Generic.List(Of Global.NaiveBayesClassificationApp.LogActivity))
             lstvwActivity.ItemsSource = listActivity
@@ -55,11 +58,11 @@ Class home
             Results = Nothing
             Session = Nothing
 
-
         Catch ex As Exception
             Dim logError As New ErrorLogger(ex.Message.ToString, ex.StackTrace.ToString, ErrorLogger.ErrorType.Warning)
             Exit Sub
         End Try
+
 
 
     End Sub
