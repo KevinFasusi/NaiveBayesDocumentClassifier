@@ -15,7 +15,11 @@ Public Class TrainClassifier
     Private Const _PROCESSSTART = "Start"
     Private Const _PROCESSFINISH = "Finished"
     Private Const _MODELDATAFILE = "ModelData.txt"
-    Private Const _MODELDATAFILE2 = "ModelData2.txt"
+    Private Const _MODELDATAFILEL0R1 = "ModelDataL0R1.txt"
+    Private Const _MODELDATAFILEL0R2 = "ModelDataL0R2.txt"
+    Private Const _MODELDATAFILEL0R3 = "ModelDataL0R3.txt"
+    Private Const _MODELDATAFILEL0R4 = "ModelDataL0R4.txt"
+    Private Const _MODELDATAFILEL0R5 = "ModelDataL0R5.txt"
 
     Public Sub New()
         _trainingModel = New List(Of String)
@@ -40,53 +44,69 @@ Public Class TrainClassifier
         End Set
     End Property
 
-    Sub BuildTrainingModel(Optional pathToData As String = "E:\Testing1")
-        'Dim sentenceArr() As String
-        'Dim corpusArr() As String
-        Dim pathSep As String
-        Dim textLine As String
-        Dim sentenceArr() As String
-        Dim sentenceArr2() As String
 
+    ''' <summary>
+    ''' 
+    ''' </summary>
+    ''' <param name="pathToData"></param>
+    ''' <remarks></remarks>
+    Sub BuildTrainingModel(pathToData As String)
+        Dim pathSep, textLine, fileName As String
         pathSep = Path.DirectorySeparatorChar
+        Dim sentenceArr(), sentenceArrL0R1(), sentenceArrL0R2(), sentenceArrL0R3(), sentenceArrL0R4(), sentenceArrL0R5() As String
         Dim filesInDirectory As String() = Directory.GetFiles(pathToData, "*.txt")
-        Dim fileName As String
-        Dim corpusArr() As String
-        Dim corpusArr2() As String
-        Dim i, j, k, l As Long
-        Dim counter As Integer
-        counter = 0
-        j = 0
-        k = 0
-        l = 0
+        Dim corpusArr(), corpusArrL0R1(), corpusArrL0R2(), corpusArrL0R3(), corpusArrL0R4(), corpusArrL0R5() As String
+        Dim l0R0, l0R1, l0R2, l0R3, l0R4, l0R5, i As Integer
+        l0R0 = 0 : l0R1 = 0 : l0R2 = 0 : l0R3 = 0 : l0R4 = 0 : l0R5 = 0 : i = 0
+
 
         Try
             Dim textIn As StreamReader
+            Dim senLoop As Integer
+            Dim selectModel As New FeatureSelection
+            Dim selectFeature As New FeatureSelection
+
             For Each fileName In filesInDirectory
                 textIn = New StreamReader(New FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
 
                 If fileName <> _MODELDATAFILE Then
-                    'read text file, chunk, tokenize add to corpus array
+
+                    'read text file, chunk, tokenize add to corpus array based on feature selection.
 
                     Do While textIn.Peek <> -1
                         textLine = textIn.ReadLine
-                        'Console.WriteLine(textLine)
                         textLine = RemoveArtifacts(textLine)
-                        ' Console.WriteLine(textLine)
                         If textLine <> "" Then
                             sentenceArr = CType(TokenizeSentence(textLine), String())
-                            sentenceArr2 = CType(CollacateTwoWords(sentenceArr), String())
+                            sentenceArrL0R1 = CType(selectFeature.FeatureSelectionL0R1(sentenceArr), String())
+                            sentenceArrL0R2 = CType(selectFeature.FeatureSelectionL0R2(sentenceArr), String())
+                            sentenceArrL0R3 = CType(selectFeature.FeatureSelectionL0R3(sentenceArr), String())
+                            sentenceArrL0R4 = CType(selectFeature.FeatureSelectionL0R4(sentenceArr), String())
+                            sentenceArrL0R5 = CType(selectFeature.FeatureSelectionL0R5(sentenceArr), String())
                         End If
 
-                        ReDim Preserve corpusArr(CInt(j + UBound(sentenceArr)))
-                        ReDim Preserve corpusArr2(CInt(k + UBound(sentenceArr2)))
+                        ReDim Preserve corpusArr(l0R0 + UBound(sentenceArr))
+                        ReDim Preserve corpusArrL0R1(l0R1 + UBound(sentenceArrL0R1))
+                        ReDim Preserve corpusArrL0R2(l0R2 + UBound(sentenceArrL0R2))
+                        ReDim Preserve corpusArrL0R3(l0R3 + UBound(sentenceArrL0R3))
+                        ReDim Preserve corpusArrL0R4(l0R4 + UBound(sentenceArrL0R4))
+                        ReDim Preserve corpusArrL0R5(l0R5 + UBound(sentenceArrL0R5))
 
                         For i = 0 To UBound(sentenceArr)
-                            corpusArr(CInt(i + j)) = sentenceArr(CInt(i))
-                            corpusArr2(CInt(i + k)) = sentenceArr2(CInt(i))
+                            corpusArr(i + l0R0) = sentenceArr(i)
+                            corpusArrL0R1(i + l0R1) = sentenceArrL0R1(i)
+                            corpusArrL0R2(i + l0R2) = sentenceArrL0R2(i)
+                            corpusArrL0R3(i + l0R1) = sentenceArrL0R3(i)
+                            corpusArrL0R4(i + l0R2) = sentenceArrL0R4(i)
+                            corpusArrL0R5(i + l0R1) = sentenceArrL0R5(i)
                         Next
-                        j = j + UBound(sentenceArr)
-                        k = k + UBound(sentenceArr2)
+
+                        l0R0 = l0R0 + UBound(sentenceArr)
+                        l0R1 = l0R1 + UBound(sentenceArrL0R1)
+                        l0R2 = l0R2 + UBound(sentenceArrL0R2)
+                        l0R3 = l0R3 + UBound(sentenceArrL0R3)
+                        l0R4 = l0R4 + UBound(sentenceArrL0R4)
+                        l0R5 = l0R5 + UBound(sentenceArrL0R5)
                     Loop
                 Else : End If
             Next
@@ -103,66 +123,79 @@ Public Class TrainClassifier
         End Try
 
         Try
-
-            Dim cleanCorpusArr(,) As String
-            Dim cleanCorpusArr2(,) As String
+            Dim cleanCorpusArr(,), cleanCorpusArrL0R1(,), cleanCorpusArrL0R2(,), _
+                cleanCorpusArrL0R3(,), cleanCorpusArrL0R4(,), cleanCorpusArrL0R5(,) As String
 
 
             cleanCorpusArr = CType(CleanCorpus(corpusArr), String(,))
-            cleanCorpusArr2 = CType(CleanCorpus(corpusArr2), String(,))
+            cleanCorpusArrL0R1 = CType(CleanCorpus(corpusArrL0R1), String(,))
+            cleanCorpusArrL0R2 = CType(CleanCorpus(corpusArrL0R2), String(,))
+            cleanCorpusArrL0R3 = CType(CleanCorpus(corpusArrL0R3), String(,))
+            cleanCorpusArrL0R4 = CType(CleanCorpus(corpusArrL0R4), String(,))
+            cleanCorpusArrL0R5 = CType(CleanCorpus(corpusArrL0R5), String(,))
 
-            Dim tallyCorpusArr(,) As String
-            Dim tallyCorpusArr2(,) As String
+
+            Dim tallyCorpusArr(,), tallyCorpusArrL0R1(,), tallyCorpusArrL0R2(,), tallyCorpusArrL0R3(,), _
+                tallyCorpusArrL0R4(,), tallyCorpusArrL0R5(,) As String
 
 
             tallyCorpusArr = CType(TallyCorpus(cleanCorpusArr), String(,))
-            tallyCorpusArr2 = CType(TallyCorpus(cleanCorpusArr2), String(,))
+            tallyCorpusArrL0R1 = CType(TallyCorpus(cleanCorpusArrL0R1), String(,))
+            tallyCorpusArrL0R2 = CType(TallyCorpus(cleanCorpusArrL0R2), String(,))
+            tallyCorpusArrL0R3 = CType(TallyCorpus(cleanCorpusArrL0R3), String(,))
+            tallyCorpusArrL0R4 = CType(TallyCorpus(cleanCorpusArrL0R4), String(,))
+            tallyCorpusArrL0R5 = CType(TallyCorpus(cleanCorpusArrL0R5), String(,))
 
 
-            Dim finalCorpusArr(,) As String
-            Dim finalCorpusArr2(,) As String
+            Dim finalCorpusArr(,), finalCorpusArrL0R1(,), finalCorpusArrL0R2(,), finalCorpusArrL0R3(,), _
+                finalCorpusArrL0R4(,), finalCorpusArrL0R5(,) As String
 
             ReDim Preserve finalCorpusArr(UBound(tallyCorpusArr), 4)
-            ReDim Preserve finalCorpusArr2(UBound(tallyCorpusArr2), 4)
+            ReDim Preserve finalCorpusArrL0R1(UBound(tallyCorpusArrL0R1), 4)
+            ReDim Preserve finalCorpusArrL0R2(UBound(tallyCorpusArrL0R2), 4)
+            ReDim Preserve finalCorpusArrL0R3(UBound(tallyCorpusArrL0R3), 4)
+            ReDim Preserve finalCorpusArrL0R4(UBound(tallyCorpusArrL0R4), 4)
+            ReDim Preserve finalCorpusArrL0R5(UBound(tallyCorpusArrL0R5), 4)
 
             'Get cumulative total of words in bag and adding additive smoothing
-            Dim cumulativeCountTotal As Long
-            Dim cumulativeCountTotal2 As Long
+            Dim cumulativeCountTotal, cumulativeCountTotalL0R1, cumulativeCountTotalL0R2, _
+                cumulativeCountTotalL0R3, cumulativeCountTotalL0R4, cumulativeCountTotalL0R5 As Long
 
             i = 0
             cumulativeCountTotal = TallyCumulativeTotal(tallyCorpusArr)
-            cumulativeCountTotal2 = TallyCumulativeTotal(tallyCorpusArr2)
+            cumulativeCountTotalL0R1 = TallyCumulativeTotal(tallyCorpusArrL0R1)
+            cumulativeCountTotalL0R2 = TallyCumulativeTotal(tallyCorpusArrL0R2)
+            cumulativeCountTotalL0R3 = TallyCumulativeTotal(tallyCorpusArrL0R3)
+            cumulativeCountTotalL0R4 = TallyCumulativeTotal(tallyCorpusArrL0R4)
+            cumulativeCountTotalL0R5 = TallyCumulativeTotal(tallyCorpusArrL0R5)
 
             Dim textout As New StreamWriter(New FileStream(pathToData & pathSep & _MODELDATAFILE, FileMode.OpenOrCreate, FileAccess.Write))
-            Dim textout2 As New StreamWriter(New FileStream(pathToData & pathSep & _MODELDATAFILE2, FileMode.OpenOrCreate, FileAccess.Write))
-            'probability and normal log
+            Dim textoutL0R1 As New StreamWriter(New FileStream(pathToData & pathSep & _MODELDATAFILEL0R1, FileMode.OpenOrCreate, FileAccess.Write))
+            Dim textoutL0R2 As New StreamWriter(New FileStream(pathToData & pathSep & _MODELDATAFILEL0R2, FileMode.OpenOrCreate, FileAccess.Write))
+            Dim textoutL0R3 As New StreamWriter(New FileStream(pathToData & pathSep & _MODELDATAFILEL0R3, FileMode.OpenOrCreate, FileAccess.Write))
+            Dim textoutL0R4 As New StreamWriter(New FileStream(pathToData & pathSep & _MODELDATAFILEL0R4, FileMode.OpenOrCreate, FileAccess.Write))
+            Dim textoutL0R5 As New StreamWriter(New FileStream(pathToData & pathSep & _MODELDATAFILEL0R5, FileMode.OpenOrCreate, FileAccess.Write))
 
-            For i = LBound(finalCorpusArr) To UBound(finalCorpusArr)
-                If IsNumeric(tallyCorpusArr(CInt(i), 1)) Then
-                    finalCorpusArr(CInt(i), 0) = tallyCorpusArr(CInt(i), 0)
-                    finalCorpusArr(CInt(i), 1) = CStr(CInt(tallyCorpusArr(CInt(i), 1)))
-                    finalCorpusArr(CInt(i), 2) = CStr(CInt(tallyCorpusArr(CInt(i), 1)) + 1)
-                    finalCorpusArr(CInt(i), 3) = CStr(Math.Round(CDbl((CDbl(tallyCorpusArr(CInt(i), 1)) + 1) / cumulativeCountTotal), 10))
-                    finalCorpusArr(CInt(i), 4) = CStr(Math.Round(Math.Log10(CDbl(CDbl(tallyCorpusArr(CInt(i), 1)) + 1 / cumulativeCountTotal)), 10))
-                    'write fully formated analysis to log file for specific artilce (Token, token count, smoothed count, probability, log probability
-                    textout.Write((tallyCorpusArr(CInt(i), 0) & "|" & CInt(tallyCorpusArr(CInt(i), 1)) & "|" & CInt(tallyCorpusArr(CInt(i), 1)) + 1 & "|" _
-                          & finalCorpusArr(CInt(i), 3) & "|" & finalCorpusArr(CInt(i), 4)) & "|" & vbCrLf)
-                Else : End If
-            Next
-            textout.Close()
-            For i = LBound(finalCorpusArr2) To UBound(finalCorpusArr2)
-                If IsNumeric(tallyCorpusArr2(CInt(i), 1)) Then
-                    finalCorpusArr2(CInt(i), 0) = tallyCorpusArr2(CInt(i), 0)
-                    finalCorpusArr2(CInt(i), 1) = CStr(CInt(tallyCorpusArr2(CInt(i), 1)))
-                    finalCorpusArr2(CInt(i), 2) = CStr(CInt(tallyCorpusArr2(CInt(i), 1)) + 1)
-                    finalCorpusArr2(CInt(i), 3) = CStr(Math.Round(CDbl((CDbl(tallyCorpusArr2(CInt(i), 1)) + 1) / cumulativeCountTotal2), 10))
-                    finalCorpusArr2(CInt(i), 4) = CStr(Math.Round(Math.Log10(CDbl(CDbl(tallyCorpusArr2(CInt(i), 1)) + 1 / cumulativeCountTotal2)), 10))
-                    'write fully formated analysis to log file for specific artilce (Token, token count, smoothed count, probability, log probability
-                    textout2.Write((tallyCorpusArr2(CInt(i), 0) & "|" & CInt(tallyCorpusArr2(CInt(i), 1)) & "|" & CInt(tallyCorpusArr2(CInt(i), 1)) + 1 & "|" _
-                          & finalCorpusArr2(CInt(i), 3) & "|" & finalCorpusArr2(CInt(i), 4)) & "|" & vbCrLf)
-                Else : End If
-            Next
-            textout2.Close()
+            Parallel.Invoke(
+                Sub()
+                    WriteModelToFile(textout, tallyCorpusArr, cumulativeCountTotal)
+                End Sub,
+                Sub()
+                    WriteModelToFile(textoutL0R1, tallyCorpusArrL0R1, cumulativeCountTotalL0R1)
+                End Sub,
+                Sub()
+                    WriteModelToFile(textoutL0R2, tallyCorpusArrL0R2, cumulativeCountTotalL0R2)
+                End Sub,
+                Sub()
+                    WriteModelToFile(textoutL0R3, tallyCorpusArrL0R3, cumulativeCountTotalL0R3)
+                End Sub,
+                Sub()
+                    WriteModelToFile(textoutL0R4, tallyCorpusArrL0R4, cumulativeCountTotalL0R4)
+                End Sub,
+                Sub()
+                    WriteModelToFile(textoutL0R5, tallyCorpusArrL0R5, cumulativeCountTotalL0R5)
+                End Sub
+)
 
         Catch ex As Exception
             Dim logError As New ErrorLogger("Error building training Model" & ex.Message.ToString, ex.StackTrace.ToString, ErrorLogger.ErrorType.Warning)
@@ -170,10 +203,36 @@ Public Class TrainClassifier
     End Sub
 
     ''' <summary>
-    ''' 
+    ''' Writes model to the model folder.
+    ''' </summary>
+    ''' <param name="textout"></param>
+    ''' <param name="tallyCorpusArr"></param>
+    ''' <param name="cumulativeCountTotal"></param>
+    ''' <remarks></remarks>
+    Public Sub WriteModelToFile(textout As StreamWriter, tallyCorpusArr(,) As String, cumulativeCountTotal As Long)
+        Dim finalCorpusArr(,) As String
+        ReDim Preserve finalCorpusArr(UBound(tallyCorpusArr), 4)
+        Dim i As Integer = 0
+
+        For i = LBound(finalCorpusArr) To UBound(finalCorpusArr)
+            If IsNumeric(tallyCorpusArr(CInt(i), 1)) Then
+                finalCorpusArr(CInt(i), 0) = tallyCorpusArr(CInt(i), 0)
+                finalCorpusArr(CInt(i), 1) = CStr(CInt(tallyCorpusArr(CInt(i), 1)))
+                finalCorpusArr(CInt(i), 2) = CStr(CInt(tallyCorpusArr(CInt(i), 1)) + 1)
+                finalCorpusArr(CInt(i), 3) = CStr(Math.Round(CDbl((CDbl(tallyCorpusArr(CInt(i), 1)) + 1) / cumulativeCountTotal), 10))
+                finalCorpusArr(CInt(i), 4) = CStr(Math.Round(Math.Log10(CDbl(CDbl(tallyCorpusArr(CInt(i), 1)) + 1 / cumulativeCountTotal)), 10))
+                'write fully formated analysis to log file for specific artilce (Token, token count, smoothed count, probability, log probability
+                textout.Write((tallyCorpusArr(CInt(i), 0) & "|" & CInt(tallyCorpusArr(CInt(i), 1)) & "|" & CInt(tallyCorpusArr(CInt(i), 1)) + 1 & "|" _
+                      & finalCorpusArr(CInt(i), 3) & "|" & finalCorpusArr(CInt(i), 4)) & "|" & vbCrLf)
+            Else : End If
+        Next
+        textout.Close()
+    End Sub
+    ''' <summary>
+    ''' Removes all punctuation from a sentence
     ''' </summary>
     ''' <param name="sentence"></param>
-    ''' <returns></returns>
+    ''' <returns>a string without any punctuation</returns>
     ''' <remarks></remarks>
     Public Function RemoveArtifacts(sentence As String) As String
 
@@ -185,23 +244,67 @@ Public Class TrainClassifier
 
 
     ''' <summary>
-    ''' 
+    ''' Pairs two consecutive words to form one token
     ''' </summary>
     ''' <param name="arr"></param>
-    ''' <returns></returns>
+    ''' <returns>returns an array of string tokens</returns>
     ''' <remarks></remarks>
     Public Function CollacateTwoWords(arr() As String) As Array
         Dim newArr(UBound(arr)) As String
         Dim p As Integer = 0
-        For i As Integer = 0 To UBound(arr) Step 2
-            If i < UBound(arr) Then
-                newArr(p) = arr(i) & "-" & arr(i + 1)
-                p = p + 1
-            End If
-        Next
+        Try
+            For i As Integer = 0 To UBound(arr) Step 4
+                If i < UBound(arr) And i >= 3 Then
+                    newArr(p) = arr(i - 1) & "-" & arr(i) & "-" & arr(i + 1)
+                    p = p + 1
+                End If
+            Next
+            Return newArr
+        Catch ex As Exception
+            Dim logError As New ErrorLogger("Error collocating words" & ex.Message.ToString, ex.StackTrace.ToString, ErrorLogger.ErrorType.Warning)
+        End Try
         Return newArr
     End Function
 
+    Public Function CollacateThreeWords(arr() As String) As Array
+        Dim newArr(UBound(arr)) As String
+        Dim p As Integer = 0
+        Try
+            For i As Integer = 0 To UBound(arr) Step 5
+                If i < UBound(arr) And i >= 5 Then
+                    newArr(p) = arr(i - 2) & "-" & arr(i - 1) & "-" & arr(i) & "-" & arr(i + 1) & "-" & arr(i + 2)
+                    p = p + 1
+                End If
+            Next
+            Return newArr
+        Catch ex As Exception
+            Dim logError As New ErrorLogger("Error collocating words" & ex.Message.ToString, ex.StackTrace.ToString, ErrorLogger.ErrorType.Warning)
+        End Try
+        Return newArr
+    End Function
+
+    Public Function CollacateWord(arr() As String) As Array
+        Dim newArr(UBound(arr)) As String
+        Dim p As Integer = 0
+        Try
+            For i As Integer = 0 To UBound(arr) Step 2
+                If i < UBound(arr) And i >= 3 Then
+                    newArr(p) = arr(i) & "-" & arr(i + 1)
+                    p = p + 1
+                End If
+            Next
+            Return newArr
+        Catch ex As Exception
+            Dim logError As New ErrorLogger("Error collocating words" & ex.Message.ToString, ex.StackTrace.ToString, ErrorLogger.ErrorType.Warning)
+        End Try
+        Return newArr
+    End Function
+    ''' <summary>
+    ''' Converts a line of text to an array of tokens
+    ''' </summary>
+    ''' <param name="sentence"></param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
     Public Function TokenizeSentence(sentence As String) As Object
         Dim i, counter As Integer
         Dim bagOfCharArr() As String
@@ -230,7 +333,7 @@ Public Class TrainClassifier
     ''' </summary>
     ''' <param name="arrToCheckFor"></param>
     ''' <param name="arrToCheckagainst"></param>
-    ''' <returns></returns>
+    ''' <returns>boolean indicating wether the the arrToCheckFor String is present in the array arrToCheckagainst</returns>
     ''' <remarks></remarks>
     Public Function chkArray(arrToCheckFor As String, arrToCheckagainst(,) As String) As Boolean
         Dim i As Long
@@ -340,5 +443,6 @@ Public Class TrainClassifier
         Next
         Return cumulativeCountTotal
     End Function
+
 
 End Class

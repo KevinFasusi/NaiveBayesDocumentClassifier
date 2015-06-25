@@ -58,6 +58,7 @@ Public Class MainWindow
             Me.Left = (screenWidth / 2) - (windowWidth / 2)
             Me.Top = (screenHeight / 2) - (windowHeight / 2)
 
+
             ' Add any initialization after the InitializeComponent() call.
             Dim splashScreen As New Splash
             splashScreen.Show()
@@ -316,4 +317,9 @@ Public Class MainWindow
 
     Private Sub button6_Click(sender As Object, e As RoutedEventArgs) Handles button6.Click
     End Sub
+
+    'Public Sub RefreshHome() Handles frmMain.GotFocus
+    '    frmMain.Refresh()
+
+    'End Sub
 End Class

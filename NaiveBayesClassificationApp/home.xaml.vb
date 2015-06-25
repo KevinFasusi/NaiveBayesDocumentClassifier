@@ -4,14 +4,16 @@ Imports DocumentClassifier
 Imports System.Xml
 
 Class home
-
+    ''' <summary>
+    ''' Populates listview with data from the logactivity.xml and any predictions in the unknown folder whem home page is initialised. The unknown folder path will be stored in the sessiondata.xml
+    ''' </summary>
+    ''' <remarks></remarks>
     Public Sub New()
         ' This call is required by the designer.
         InitializeComponent()
-        ' Add any initialization after the InitializeComponent() call.
+
 
         Try
-
             Dim listActivity As New List(Of LogActivity)
 
             Dim rowActivity As New LogActivity
@@ -22,9 +24,10 @@ Class home
             'deserialise into this initialisation the saved state of the class for a project
             Dim xmlSerialiser As XmlSerializer = New XmlSerializer(GetType(List(Of LogActivity)))
 
+
+            'setting other controls on page
             Dim currentModel As New ApplicationSettings
             lblCurrentModel.Content = "Classification Model: " & currentModel.Classification.ToString
-
 
             listActivity = CType(xmlSerialiser.Deserialize(tag), Global.System.Collections.Generic.List(Of Global.NaiveBayesClassificationApp.LogActivity))
             lstvwActivity.ItemsSource = listActivity
@@ -64,6 +67,6 @@ Class home
         End Try
 
 
-
     End Sub
+
 End Class

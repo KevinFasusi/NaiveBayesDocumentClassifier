@@ -78,6 +78,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Expression.Interactions" />
+    <Reference Include="OxyPlot">
+      <HintPath>packages\OxyPlot.Core.2014.1.546\lib\portable-net4+sl4+wp71+win8\OxyPlot.dll</HintPath>
+    </Reference>
+    <Reference Include="OxyPlot.Wpf">
+      <HintPath>packages\OxyPlot.Wpf.2014.1.546\lib\net45\OxyPlot.Wpf.dll</HintPath>
+    </Reference>
+    <Reference Include="OxyPlot.Xps">
+      <HintPath>packages\OxyPlot.Wpf.2014.1.546\lib\net45\OxyPlot.Xps.dll</HintPath>
+    </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Interactivity" />
     <Reference Include="System.Xml.Linq" />
@@ -97,10 +106,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Activity.xaml.vb">
+    <Compile Include="Pages\Activity.xaml.vb">
       <DependentUpon>Activity.xaml</DependentUpon>
     </Compile>
-    <Compile Include="AliasSettings.xaml.vb">
+    <Compile Include="Pages\AliasSettings.xaml.vb">
       <DependentUpon>AliasSettings.xaml</DependentUpon>
     </Compile>
     <Compile Include="ApplicationSettings.vb" />
@@ -111,6 +120,7 @@
     <Compile Include="MainSettings.xaml.vb">
       <DependentUpon>MainSettings.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MainViewModel.vb" />
     <Compile Include="ManageXmlFiles.vb" />
     <Compile Include="home.xaml.vb">
       <DependentUpon>home.xaml</DependentUpon>
@@ -138,11 +148,11 @@
     <Compile Include="test.xaml.vb">
       <DependentUpon>test.xaml</DependentUpon>
     </Compile>
-    <Page Include="Activity.xaml">
+    <Page Include="Pages\Activity.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="AliasSettings.xaml">
+    <Page Include="Pages\AliasSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -246,6 +256,7 @@
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
     <AppDesigner Include="My Project\" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

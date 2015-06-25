@@ -80,6 +80,7 @@
   <ItemGroup>
     <Compile Include="EnsembleClassifier.vb" />
     <Compile Include="ErrorLogger.vb" />
+    <Compile Include="FeatureSelection.vb" />
     <Compile Include="RetrieveModel.vb" />
     <Compile Include="ClassifyUnknown.vb" />
     <Compile Include="SessionData.vb" />

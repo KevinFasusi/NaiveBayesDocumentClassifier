@@ -6,7 +6,7 @@
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="400"
       Title="AliasSettings">
-    <Grid>
+    <Grid Margin="0,0,-10,0">
         <Grid.Background>
             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                 <GradientStop Color="Black" Offset="0"/>
@@ -15,8 +15,8 @@
                 <GradientStop Color="#FF575656" Offset="0.02"/>
             </LinearGradientBrush>
         </Grid.Background>
-        <StackPanel Margin="20" MaxWidth="250" HorizontalAlignment="Left" >
-            <Grid Margin="3,3,10,3">
+        <StackPanel Margin="20,20,0,20" MaxWidth="290" HorizontalAlignment="Left" Width="293" >
+            <Grid Margin="3,3,10,3" Height="254" Width="274">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
@@ -36,15 +36,15 @@
 
                 <Label Grid.Row="1" Grid.Column="0" Margin="3" VerticalAlignment="Center">Folder:</Label>
                 <TextBox Name="txtFolder1" Grid.Row="1" Grid.Column="1" Margin="3" Height="Auto"  VerticalAlignment="Center"></TextBox>
-                
+
                 <GroupBox  Header="First Folder"  Grid.Row="3" Grid.ColumnSpan="2" Grid.RowSpan="2"></GroupBox>
                 <Label Grid.Row="3" Grid.Column="0" Margin="3,20,3,3" VerticalAlignment="Center">Alias:</Label>
                 <TextBox Name="txtAlias2" Grid.Row="3" Grid.Column="1" Margin="3,20,3,3" Height="Auto"  VerticalAlignment="Center"></TextBox>
-                
-                
+
+
                 <Label Grid.Row="4" Grid.Column="0"   VerticalAlignment="Center">Folder:</Label>
                 <TextBox Name="txtFolder2" Grid.Row="4" Grid.Column="1"  Margin="3,20,3,3"  Height="Auto"  VerticalAlignment="Center"></TextBox>
-                <Button Grid.Row="5" Grid.Column="2"  Padding="2" Margin="100,10,10,10" Click="Button_Click">Update</Button>
+                <Button Grid.Row="5" Grid.Column="2"  Padding="2" Margin="150,10,0,10" Click="Button_Click">Update</Button>
             </Grid>
         </StackPanel>
     </Grid>

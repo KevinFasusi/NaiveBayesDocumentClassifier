@@ -10,6 +10,7 @@ Public Class LogActivity
     Private _datetime As String
     Private _update As String
     Private Const _XPATH As String = "Resources\LogActivity.xml"
+
     Public Property Activity As String
         Get
             Activity = _activity
@@ -62,15 +63,12 @@ Public Class LogActivity
         settings.Indent = True
         settings.IndentChars = ("  ")
 
-
-
         Dim tag As New IO.StreamReader(_XPATH, False)
 
         Dim xmlIn As XmlReader = XmlReader.Create(tag)
         Dim xmlSerialiser As XmlSerializer = New XmlSerializer(GetType(List(Of LogActivity)))
 
         Do While (tryAgain)
-
 
             Try
                 If xmlSerialiser.CanDeserialize(xmlIn) = True Then
@@ -103,7 +101,6 @@ Public Class LogActivity
                 writer.Close()
                 tryAgain = False
                 rowActivity = Nothing
-
 
             Catch ex As Exception
                 Dim logError As New ErrorLogger("Error appending to log " & ex.Message.ToString, ex.StackTrace.ToString, ErrorLogger.ErrorType.Warning)
