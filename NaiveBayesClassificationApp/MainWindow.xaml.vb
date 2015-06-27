@@ -268,8 +268,10 @@ Public Class MainWindow
         activity.Status = "Start"
         activity.Update = "Classified all Unknown files in folder: " & Session.UnknownFolder.ToString
         activity.AppendToLog(activity)
-        Retrieve1.setModel(Session.FolderPath1)
-        Retrieve2.setModel(Session.FolderPath2)
+        'set RetrieveModel.FeatureSelection base on the features selected by the user
+
+        Retrieve1.setModel(Session.FolderPath1, RetrieveModel.FeatureSelection.L0R1)
+        Retrieve2.setModel(Session.FolderPath2, RetrieveModel.FeatureSelection.L0R1)
         mod1 = CType(Retrieve1.Model, String(,))
         mod2 = CType(Retrieve2.Model, String(,))
 
@@ -277,7 +279,7 @@ Public Class MainWindow
         Classify.Model2 = mod2
 
         Try
-            Classify.ClassifyUnknown(Session.UnknownFolder)
+            Classify.ClassifyUnknown(Session.UnknownFolder, DocumentClassifier.TrainClassifier.Feature.L0R1)
         Catch ex As Exception
             Dim logError As New ErrorLogger("User prompted to make sure they have added unclassified files for classification" & ex.Message.ToString, ex.StackTrace.ToString, ErrorLogger.ErrorType.Warning)
             MsgBox("Please make sure you have added unclassified files for classification.")

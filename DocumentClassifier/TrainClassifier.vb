@@ -1,11 +1,25 @@
-﻿Imports System.IO
-
+﻿Imports System.Collections.Generic
+Imports System.Diagnostics
+Imports System.IO
+Imports System.Security
+Imports System.Threading
+Imports System.Threading.Tasks
 
 Public Class TrainClassifier
     Public Enum FolderSelection
         folder1
         folder2
     End Enum
+
+    Public Enum Feature
+        L0R0
+        L0R1
+        L0R2
+        L0R3
+        L0R4
+        L0R5
+    End Enum
+
     Private _sentenceString As String '
     Private _wordCount As Integer
     Private _wordArr() As String
@@ -14,7 +28,7 @@ Public Class TrainClassifier
     Private Const _PROCESSNAME = "Training"
     Private Const _PROCESSSTART = "Start"
     Private Const _PROCESSFINISH = "Finished"
-    Private Const _MODELDATAFILE = "ModelData.txt"
+    Private Const _MODELDATAFILEL0R0 = "ModelDataL0R0.txt"
     Private Const _MODELDATAFILEL0R1 = "ModelDataL0R1.txt"
     Private Const _MODELDATAFILEL0R2 = "ModelDataL0R2.txt"
     Private Const _MODELDATAFILEL0R3 = "ModelDataL0R3.txt"
@@ -53,93 +67,33 @@ Public Class TrainClassifier
     Sub BuildTrainingModel(pathToData As String)
         Dim pathSep, textLine, fileName As String
         pathSep = Path.DirectorySeparatorChar
-        Dim sentenceArr(), sentenceArrL0R1(), sentenceArrL0R2(), sentenceArrL0R3(), sentenceArrL0R4(), sentenceArrL0R5() As String
+
         Dim filesInDirectory As String() = Directory.GetFiles(pathToData, "*.txt")
-        Dim corpusArr(), corpusArrL0R1(), corpusArrL0R2(), corpusArrL0R3(), corpusArrL0R4(), corpusArrL0R5() As String
+        Dim corpusArrL0R0(), corpusArrL0R1(), corpusArrL0R2(), corpusArrL0R3(), corpusArrL0R4(), corpusArrL0R5() As String
         Dim l0R0, l0R1, l0R2, l0R3, l0R4, l0R5, i As Integer
         l0R0 = 0 : l0R1 = 0 : l0R2 = 0 : l0R3 = 0 : l0R4 = 0 : l0R5 = 0 : i = 0
-
-
-        Try
-            Dim textIn As StreamReader
-            Dim senLoop As Integer
-            Dim selectModel As New FeatureSelection
-            Dim selectFeature As New FeatureSelection
-
-            For Each fileName In filesInDirectory
-                textIn = New StreamReader(New FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
-
-                If fileName <> _MODELDATAFILE Then
-
-                    'read text file, chunk, tokenize add to corpus array based on feature selection.
-
-                    Do While textIn.Peek <> -1
-                        textLine = textIn.ReadLine
-                        textLine = RemoveArtifacts(textLine)
-                        If textLine <> "" Then
-                            sentenceArr = CType(TokenizeSentence(textLine), String())
-                            sentenceArrL0R1 = CType(selectFeature.FeatureSelectionL0R1(sentenceArr), String())
-                            sentenceArrL0R2 = CType(selectFeature.FeatureSelectionL0R2(sentenceArr), String())
-                            sentenceArrL0R3 = CType(selectFeature.FeatureSelectionL0R3(sentenceArr), String())
-                            sentenceArrL0R4 = CType(selectFeature.FeatureSelectionL0R4(sentenceArr), String())
-                            sentenceArrL0R5 = CType(selectFeature.FeatureSelectionL0R5(sentenceArr), String())
-                        End If
-
-                        ReDim Preserve corpusArr(l0R0 + UBound(sentenceArr))
-                        ReDim Preserve corpusArrL0R1(l0R1 + UBound(sentenceArrL0R1))
-                        ReDim Preserve corpusArrL0R2(l0R2 + UBound(sentenceArrL0R2))
-                        ReDim Preserve corpusArrL0R3(l0R3 + UBound(sentenceArrL0R3))
-                        ReDim Preserve corpusArrL0R4(l0R4 + UBound(sentenceArrL0R4))
-                        ReDim Preserve corpusArrL0R5(l0R5 + UBound(sentenceArrL0R5))
-
-                        For i = 0 To UBound(sentenceArr)
-                            corpusArr(i + l0R0) = sentenceArr(i)
-                            corpusArrL0R1(i + l0R1) = sentenceArrL0R1(i)
-                            corpusArrL0R2(i + l0R2) = sentenceArrL0R2(i)
-                            corpusArrL0R3(i + l0R1) = sentenceArrL0R3(i)
-                            corpusArrL0R4(i + l0R2) = sentenceArrL0R4(i)
-                            corpusArrL0R5(i + l0R1) = sentenceArrL0R5(i)
-                        Next
-
-                        l0R0 = l0R0 + UBound(sentenceArr)
-                        l0R1 = l0R1 + UBound(sentenceArrL0R1)
-                        l0R2 = l0R2 + UBound(sentenceArrL0R2)
-                        l0R3 = l0R3 + UBound(sentenceArrL0R3)
-                        l0R4 = l0R4 + UBound(sentenceArrL0R4)
-                        l0R5 = l0R5 + UBound(sentenceArrL0R5)
-                    Loop
-                Else : End If
-            Next
-
-            textIn.Close()
-
-        Catch ex As EndOfStreamException
-            Dim logError As New ErrorLogger("Error building training Model" & ex.Message.ToString, ex.StackTrace.ToString, ErrorLogger.ErrorType.Warning)
-
-            Exit Sub
-        Catch ex As Exception
-            Dim logError As New ErrorLogger("Error building training Model" & ex.Message.ToString, ex.StackTrace.ToString, ErrorLogger.ErrorType.Warning)
-            Exit Sub
-        End Try
+        Dim featureArrCollection As Collection
 
         Try
-            Dim cleanCorpusArr(,), cleanCorpusArrL0R1(,), cleanCorpusArrL0R2(,), _
+            featureArrCollection = Features(filesInDirectory)
+
+            Dim cleanCorpusArrL0R0(,), cleanCorpusArrL0R1(,), cleanCorpusArrL0R2(,), _
                 cleanCorpusArrL0R3(,), cleanCorpusArrL0R4(,), cleanCorpusArrL0R5(,) As String
 
 
-            cleanCorpusArr = CType(CleanCorpus(corpusArr), String(,))
-            cleanCorpusArrL0R1 = CType(CleanCorpus(corpusArrL0R1), String(,))
-            cleanCorpusArrL0R2 = CType(CleanCorpus(corpusArrL0R2), String(,))
-            cleanCorpusArrL0R3 = CType(CleanCorpus(corpusArrL0R3), String(,))
-            cleanCorpusArrL0R4 = CType(CleanCorpus(corpusArrL0R4), String(,))
-            cleanCorpusArrL0R5 = CType(CleanCorpus(corpusArrL0R5), String(,))
+            cleanCorpusArrL0R0 = CType(CleanCorpus(CType(featureArrCollection.Item(Feature.L0R0.ToString), String())), String(,))
+            cleanCorpusArrL0R1 = CType(CleanCorpus(CType(featureArrCollection.Item(Feature.L0R1.ToString), String())), String(,))
+            cleanCorpusArrL0R2 = CType(CleanCorpus(CType(featureArrCollection.Item(Feature.L0R2.ToString), String())), String(,))
+            cleanCorpusArrL0R3 = CType(CleanCorpus(CType(featureArrCollection.Item(Feature.L0R3.ToString), String())), String(,))
+            cleanCorpusArrL0R4 = CType(CleanCorpus(CType(featureArrCollection.Item(Feature.L0R4.ToString), String())), String(,))
+            cleanCorpusArrL0R5 = CType(CleanCorpus(CType(featureArrCollection.Item(Feature.L0R5.ToString), String())), String(,))
 
 
-            Dim tallyCorpusArr(,), tallyCorpusArrL0R1(,), tallyCorpusArrL0R2(,), tallyCorpusArrL0R3(,), _
+            Dim tallyCorpusArrL0R0(,), tallyCorpusArrL0R1(,), tallyCorpusArrL0R2(,), tallyCorpusArrL0R3(,), _
                 tallyCorpusArrL0R4(,), tallyCorpusArrL0R5(,) As String
 
 
-            tallyCorpusArr = CType(TallyCorpus(cleanCorpusArr), String(,))
+            tallyCorpusArrL0R0 = CType(TallyCorpus(cleanCorpusArrL0R0), String(,))
             tallyCorpusArrL0R1 = CType(TallyCorpus(cleanCorpusArrL0R1), String(,))
             tallyCorpusArrL0R2 = CType(TallyCorpus(cleanCorpusArrL0R2), String(,))
             tallyCorpusArrL0R3 = CType(TallyCorpus(cleanCorpusArrL0R3), String(,))
@@ -147,10 +101,10 @@ Public Class TrainClassifier
             tallyCorpusArrL0R5 = CType(TallyCorpus(cleanCorpusArrL0R5), String(,))
 
 
-            Dim finalCorpusArr(,), finalCorpusArrL0R1(,), finalCorpusArrL0R2(,), finalCorpusArrL0R3(,), _
+            Dim finalCorpusArrL0R0(,), finalCorpusArrL0R1(,), finalCorpusArrL0R2(,), finalCorpusArrL0R3(,), _
                 finalCorpusArrL0R4(,), finalCorpusArrL0R5(,) As String
 
-            ReDim Preserve finalCorpusArr(UBound(tallyCorpusArr), 4)
+            ReDim Preserve finalCorpusArrL0R0(UBound(tallyCorpusArrL0R0), 4)
             ReDim Preserve finalCorpusArrL0R1(UBound(tallyCorpusArrL0R1), 4)
             ReDim Preserve finalCorpusArrL0R2(UBound(tallyCorpusArrL0R2), 4)
             ReDim Preserve finalCorpusArrL0R3(UBound(tallyCorpusArrL0R3), 4)
@@ -158,18 +112,18 @@ Public Class TrainClassifier
             ReDim Preserve finalCorpusArrL0R5(UBound(tallyCorpusArrL0R5), 4)
 
             'Get cumulative total of words in bag and adding additive smoothing
-            Dim cumulativeCountTotal, cumulativeCountTotalL0R1, cumulativeCountTotalL0R2, _
+            Dim cumulativeCountTotalL0R0, cumulativeCountTotalL0R1, cumulativeCountTotalL0R2, _
                 cumulativeCountTotalL0R3, cumulativeCountTotalL0R4, cumulativeCountTotalL0R5 As Long
 
             i = 0
-            cumulativeCountTotal = TallyCumulativeTotal(tallyCorpusArr)
+            cumulativeCountTotalL0R0 = TallyCumulativeTotal(tallyCorpusArrL0R0)
             cumulativeCountTotalL0R1 = TallyCumulativeTotal(tallyCorpusArrL0R1)
             cumulativeCountTotalL0R2 = TallyCumulativeTotal(tallyCorpusArrL0R2)
             cumulativeCountTotalL0R3 = TallyCumulativeTotal(tallyCorpusArrL0R3)
             cumulativeCountTotalL0R4 = TallyCumulativeTotal(tallyCorpusArrL0R4)
             cumulativeCountTotalL0R5 = TallyCumulativeTotal(tallyCorpusArrL0R5)
 
-            Dim textout As New StreamWriter(New FileStream(pathToData & pathSep & _MODELDATAFILE, FileMode.OpenOrCreate, FileAccess.Write))
+            Dim textoutL0R0 As New StreamWriter(New FileStream(pathToData & pathSep & _MODELDATAFILEL0R0, FileMode.OpenOrCreate, FileAccess.Write))
             Dim textoutL0R1 As New StreamWriter(New FileStream(pathToData & pathSep & _MODELDATAFILEL0R1, FileMode.OpenOrCreate, FileAccess.Write))
             Dim textoutL0R2 As New StreamWriter(New FileStream(pathToData & pathSep & _MODELDATAFILEL0R2, FileMode.OpenOrCreate, FileAccess.Write))
             Dim textoutL0R3 As New StreamWriter(New FileStream(pathToData & pathSep & _MODELDATAFILEL0R3, FileMode.OpenOrCreate, FileAccess.Write))
@@ -178,7 +132,7 @@ Public Class TrainClassifier
 
             Parallel.Invoke(
                 Sub()
-                    WriteModelToFile(textout, tallyCorpusArr, cumulativeCountTotal)
+                    WriteModelToFile(textoutL0R0, tallyCorpusArrL0R0, cumulativeCountTotalL0R0)
                 End Sub,
                 Sub()
                     WriteModelToFile(textoutL0R1, tallyCorpusArrL0R1, cumulativeCountTotalL0R1)
@@ -201,6 +155,72 @@ Public Class TrainClassifier
             Dim logError As New ErrorLogger("Error building training Model" & ex.Message.ToString, ex.StackTrace.ToString, ErrorLogger.ErrorType.Warning)
         End Try
     End Sub
+
+    Public Function Features(filesInDirectory As String()) As Collection
+        Dim sentenceArrL0R0(), sentenceArrL0R1(), sentenceArrL0R2(), sentenceArrL0R3(), sentenceArrL0R4(), sentenceArrL0R5() As String
+        Dim corpusArrL0R0(), corpusArrL0R1(), corpusArrL0R2(), corpusArrL0R3(), corpusArrL0R4(), corpusArrL0R5() As String
+        Dim selectFeature As New FeatureSelection
+        Dim tempfeatures As New Collection
+        Dim pathSep, textLine, fileName As String
+        Dim l0R0, l0R1, l0R2, l0R3, l0R4, l0R5, i As Integer
+        l0R0 = 0 : l0R1 = 0 : l0R2 = 0 : l0R3 = 0 : l0R4 = 0 : l0R5 = 0 : i = 0
+
+        For Each fileName In filesInDirectory
+            Dim textIn As StreamReader
+            textIn = New StreamReader(New FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+
+            If fileName <> _MODELDATAFILEL0R0 And fileName <> _MODELDATAFILEL0R1 And fileName <> _MODELDATAFILEL0R2 And _
+                fileName <> _MODELDATAFILEL0R3 And fileName <> _MODELDATAFILEL0R4 And fileName <> _MODELDATAFILEL0R5 Then
+
+                'read text file, chunk, tokenize add to corpus array based on feature selection.
+
+                Do While textIn.Peek <> -1
+                    textLine = textIn.ReadLine
+                    textLine = RemoveArtifacts(textLine)
+                    If textLine <> "" Then
+                        sentenceArrL0R0 = CType(TokenizeSentence(textLine), String())
+                        sentenceArrL0R1 = CType(selectFeature.FeatureSelectionL0R1(sentenceArrL0R0), String())
+                        sentenceArrL0R2 = CType(selectFeature.FeatureSelectionL0R2(sentenceArrL0R0), String())
+                        sentenceArrL0R3 = CType(selectFeature.FeatureSelectionL0R3(sentenceArrL0R0), String())
+                        sentenceArrL0R4 = CType(selectFeature.FeatureSelectionL0R4(sentenceArrL0R0), String())
+                        sentenceArrL0R5 = CType(selectFeature.FeatureSelectionL0R5(sentenceArrL0R0), String())
+                    End If
+
+                    ReDim Preserve corpusArrL0R0(l0R0 + UBound(sentenceArrL0R0))
+                    ReDim Preserve corpusArrL0R1(l0R1 + UBound(sentenceArrL0R1))
+                    ReDim Preserve corpusArrL0R2(l0R2 + UBound(sentenceArrL0R2))
+                    ReDim Preserve corpusArrL0R3(l0R3 + UBound(sentenceArrL0R3))
+                    ReDim Preserve corpusArrL0R4(l0R4 + UBound(sentenceArrL0R4))
+                    ReDim Preserve corpusArrL0R5(l0R5 + UBound(sentenceArrL0R5))
+
+                    For i = 0 To UBound(sentenceArrL0R0)
+                        corpusArrL0R0(i + l0R0) = sentenceArrL0R0(i)
+                        corpusArrL0R1(i + l0R1) = sentenceArrL0R1(i)
+                        corpusArrL0R2(i + l0R2) = sentenceArrL0R2(i)
+                        corpusArrL0R3(i + l0R1) = sentenceArrL0R3(i)
+                        corpusArrL0R4(i + l0R2) = sentenceArrL0R4(i)
+                        corpusArrL0R5(i + l0R1) = sentenceArrL0R5(i)
+                    Next
+
+                    l0R0 = l0R0 + UBound(sentenceArrL0R0)
+                    l0R1 = l0R1 + UBound(sentenceArrL0R1)
+                    l0R2 = l0R2 + UBound(sentenceArrL0R2)
+                    l0R3 = l0R3 + UBound(sentenceArrL0R3)
+                    l0R4 = l0R4 + UBound(sentenceArrL0R4)
+                    l0R5 = l0R5 + UBound(sentenceArrL0R5)
+                Loop
+            Else : End If
+        Next
+
+        tempfeatures.Add(corpusArrL0R0, Feature.L0R0.ToString)
+        tempfeatures.Add(corpusArrL0R1, Feature.L0R1.ToString)
+        tempfeatures.Add(corpusArrL0R2, Feature.L0R2.ToString)
+        tempfeatures.Add(corpusArrL0R3, Feature.L0R3.ToString)
+        tempfeatures.Add(corpusArrL0R4, Feature.L0R4.ToString)
+        tempfeatures.Add(corpusArrL0R5, Feature.L0R5.ToString)
+
+        Return tempfeatures
+    End Function
 
     ''' <summary>
     ''' Writes model to the model folder.
@@ -236,9 +256,9 @@ Public Class TrainClassifier
     ''' <remarks></remarks>
     Public Function RemoveArtifacts(sentence As String) As String
 
-        RemoveArtifacts = Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(LCase(sentence), ". ", " "), ", ", " "), "; ", " "), ": ", " ") _
+        RemoveArtifacts = Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(LCase(sentence), ". ", " "), ", ", " "), "; ", " "), ": ", " ") _
                                     , "' ", " "), "! ", " "), "# ", " "), "$", " "), "%", " "), "&", " "), "(", " "), ")", " "), " - ", " "), "_", " "), "--", " "), "+", " ") _
-                                    , "=", " "), "/", " "), "\", " "), "{", " "), "}", " "), "[", " "), "]", " "), """ ", " "), "?", " "), "*", " "), " """, " "), """", " ")
+                                    , "=", " "), "/", " "), "\", " "), "{", " "), "}", " "), "[", " "), "]", " "), """ ", " "), "?", " "), "*", " "), " """, " "), """", " "), vbCrLf, " ")
 
     End Function
 

@@ -55,7 +55,7 @@ Public Class ClassifyUnknown
     'instead of having to read back from a text file
     'in next code review i will be removing the the dependece on text files to store the prediction data and using xml files only
 
-    Public Sub ClassifyUnknown(pathToUnknown As String)
+    Public Sub ClassifyUnknown(pathToUnknown As String, featureToSelect As Feature)
 
         Dim pathSep As String
         Dim textLine As String
@@ -64,10 +64,11 @@ Public Class ClassifyUnknown
         Dim filesInDirectory As String() = Directory.GetFiles(pathToUnknown, "*.txt")
         Dim fileName As String
         Dim corpusArr() As String
-        Dim i, j As Long
+        Dim i, lnRn As Integer
         Dim counter As Integer
         counter = 0
-        j = 0
+        lnRn = 0
+        Dim selectFeature As New FeatureSelection
 
 
         For Each fileName In filesInDirectory
@@ -77,7 +78,7 @@ Public Class ClassifyUnknown
             Dim classifierModelFile As String
 
             If Right(fileName, 15) <> "-Prediction.txt" Then
-                classifierModelFile = Replace(fileName, ".txt", "") & "-Prediction.txt"
+                classifierModelFile = Replace(fileName, ".txt", "") & "-" & featureToSelect.ToString & "-Prediction.txt"
 
                 Do While textIn.Peek <> -1
                     textLine = textIn.ReadLine
@@ -86,22 +87,34 @@ Public Class ClassifyUnknown
                     ' Console.WriteLine(textLine)
                     If textLine <> "" Then
                         sentenceArr = CType(TokenizeSentence(textLine), String())
+
+                        Select Case featureToSelect
+                            Case Feature.L0R1
+                                sentenceArr = CType(selectFeature.FeatureSelectionL0R1(sentenceArr), String())
+                            Case Feature.L0R2
+                                sentenceArr = CType(selectFeature.FeatureSelectionL0R2(sentenceArr), String())
+                            Case Feature.L0R3
+                                sentenceArr = CType(selectFeature.FeatureSelectionL0R3(sentenceArr), String())
+                            Case Feature.L0R4
+                                sentenceArr = CType(selectFeature.FeatureSelectionL0R4(sentenceArr), String())
+                            Case Feature.L0R5
+                                sentenceArr = CType(selectFeature.FeatureSelectionL0R5(sentenceArr), String())
+                        End Select
                     End If
 
 
-                    ReDim Preserve corpusArr(CInt(j + UBound(sentenceArr)))
+                    ReDim Preserve corpusArr(lnRn + UBound(sentenceArr))
 
                     For i = 0 To UBound(sentenceArr)
-                        corpusArr(CInt(i + j)) = sentenceArr(CInt(i))
+                        corpusArr(i + lnRn) = sentenceArr(i)
                     Next
-                    j = j + UBound(sentenceArr)
-
+                    lnRn = lnRn + UBound(sentenceArr)
                 Loop
 
 
                 'move to own function
                 Dim cleanCorpusArr(,) As String
-             
+
                 cleanCorpusArr = CType(MyBase.CleanCorpus(corpusArr), String(,))
 
                 Dim tallyCorpusArr(,) As String
@@ -166,7 +179,7 @@ Public Class ClassifyUnknown
                 Dim logArr(3) As String
 
                 logArr(0) = fileName
-              
+
                 Dim resultsSession As SessionData
                 resultsSession = New SessionData
 
@@ -191,6 +204,8 @@ Public Class ClassifyUnknown
             End If
         Next
     End Sub
+
+
 
     Public Sub AppendToLog(logging() As String)
         Const _XPATH As String = "Resources/LogResult.xml"
